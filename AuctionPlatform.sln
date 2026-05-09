@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionPlatform.WebApi", "AuctionPlatform.WebApi\AuctionPlatform.WebApi.csproj", "{012BE68E-8819-4A9E-9B38-0DDDC97D77F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionPlatform.Domain", "AuctionPlatform.Domain\AuctionPlatform.Domain.csproj", "{B4B340DA-07D7-46A4-80D3-19C3C10730A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionPlatform.Application", "AuctionPlatform.Application\AuctionPlatform.Application.csproj", "{6020C2C5-20D7-4FFF-9467-3CDAD5ADB6F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionPlatform.Infrastructure", "AuctionPlatform.Infrastructure\AuctionPlatform.Infrastructure.csproj", "{794D771E-9D9E-4071-A33C-F96D8E0FA089}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{012BE68E-8819-4A9E-9B38-0DDDC97D77F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{012BE68E-8819-4A9E-9B38-0DDDC97D77F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{012BE68E-8819-4A9E-9B38-0DDDC97D77F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{012BE68E-8819-4A9E-9B38-0DDDC97D77F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4B340DA-07D7-46A4-80D3-19C3C10730A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B340DA-07D7-46A4-80D3-19C3C10730A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B340DA-07D7-46A4-80D3-19C3C10730A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B340DA-07D7-46A4-80D3-19C3C10730A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6020C2C5-20D7-4FFF-9467-3CDAD5ADB6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6020C2C5-20D7-4FFF-9467-3CDAD5ADB6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6020C2C5-20D7-4FFF-9467-3CDAD5ADB6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6020C2C5-20D7-4FFF-9467-3CDAD5ADB6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{794D771E-9D9E-4071-A33C-F96D8E0FA089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{794D771E-9D9E-4071-A33C-F96D8E0FA089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{794D771E-9D9E-4071-A33C-F96D8E0FA089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{794D771E-9D9E-4071-A33C-F96D8E0FA089}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,15 @@
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\bin\Debug\net9.0\AuctionPlatform.Application.deps.json
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\bin\Debug\net9.0\AuctionPlatform.Application.dll
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\bin\Debug\net9.0\AuctionPlatform.Application.pdb
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\bin\Debug\net9.0\AuctionPlatform.Domain.dll
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\bin\Debug\net9.0\AuctionPlatform.Domain.pdb
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.csproj.AssemblyReference.cache
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.AssemblyInfoInputs.cache
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.AssemblyInfo.cs
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.csproj.CoreCompileInputs.cache
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionP.5BBADE66.Up2Date
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.dll
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\refint\AuctionPlatform.Application.dll
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\AuctionPlatform.Application.pdb
+C:\Users\Білеуш Антон\RiderProjects\AuctionPlatform\AuctionPlatform.Application\obj\Debug\net9.0\ref\AuctionPlatform.Application.dll

@@ -1,0 +1,6 @@
+@AuctionPlatform_HostAddress = http://localhost:5130
+
+GET {{AuctionPlatform_HostAddress}}
+Accept: application/json
+
+###
