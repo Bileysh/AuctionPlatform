@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\AuctionPlatform.WebApi.props" />
-</Project>

@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\AuctionPlatform.WebApi.props" />
-</Project>
