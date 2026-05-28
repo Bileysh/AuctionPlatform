@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuctionPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-    [Migration("20260507140640_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260511115943_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -50,6 +53,9 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.Property<decimal>("StartingPrice")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -64,6 +70,8 @@ namespace AuctionPlatform.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("SellerId");
 
@@ -99,6 +107,68 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.ToTable("Bids");
                 });
 
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Електроніка"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Автомобілі"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Мистецтво"
+                        });
+                });
+
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuctionItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuctionItemId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -126,6 +196,12 @@ namespace AuctionPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.AuctionItem", b =>
                 {
+                    b.HasOne("AuctionPlatform.Domain.Entities.Category", "Category")
+                        .WithMany("Auctions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("AuctionPlatform.Domain.Entities.User", "Seller")
                         .WithMany()
                         .HasForeignKey("SellerId")
@@ -137,6 +213,8 @@ namespace AuctionPlatform.Infrastructure.Migrations
                         .HasForeignKey("WinnerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.Navigation("Category");
+
                     b.Navigation("Seller");
 
                     b.Navigation("Winner");
@@ -145,7 +223,7 @@ namespace AuctionPlatform.Infrastructure.Migrations
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.Bid", b =>
                 {
                     b.HasOne("AuctionPlatform.Domain.Entities.AuctionItem", "AuctionItem")
-                        .WithMany()
+                        .WithMany("Bids")
                         .HasForeignKey("AuctionItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -159,6 +237,37 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.Navigation("AuctionItem");
 
                     b.Navigation("Bidder");
+                });
+
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Comment", b =>
+                {
+                    b.HasOne("AuctionPlatform.Domain.Entities.AuctionItem", "AuctionItem")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuctionItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AuctionPlatform.Domain.Entities.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AuctionItem");
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.AuctionItem", b =>
+                {
+                    b.Navigation("Bids");
+
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Auctions");
                 });
 #pragma warning restore 612, 618
         }

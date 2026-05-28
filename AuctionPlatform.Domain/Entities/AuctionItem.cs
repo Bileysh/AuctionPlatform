@@ -1,4 +1,6 @@
-﻿namespace AuctionPlatform.Domain.Entities;
+﻿using AuctionPlatform.Domain.Entities.Enums;
+
+namespace AuctionPlatform.Domain.Entities;
 
 public class AuctionItem
 {
@@ -11,25 +13,41 @@ public class AuctionItem
     public DateTime EndsAt { get; private set; }
     public Guid SellerId { get; private set; }
     public Guid? WinnerId { get; private set; }
-    
     public uint Version { get; private set; }
+    public AuctionStatus Status { get; private set; }
+    public int CategoryId { get; private set; }
     
     public User Seller { get; private set; } = null!;
     public User? Winner { get; private set; }
+    public Category Category { get; private set; } = null!;
+    public ICollection<Bid> Bids { get; private set; } = new List<Bid>();
+    public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
     
     protected AuctionItem(){}
     
-    public AuctionItem(string title, string description, decimal startingPrice, DateTime endsAt, Guid sellerId)
+    public AuctionItem(string title, string description, decimal startingPrice, DateTime endsAt, Guid sellerId, int categoryId)
     {
         Id = Guid.NewGuid();
         Title = title;
         Description = description;
         StartingPrice = startingPrice;
         CurrentPrice = startingPrice;
-        CreatedAt = DateTime.UtcNow;
         EndsAt = endsAt;
+        CreatedAt = DateTime.UtcNow;
         SellerId = sellerId;
-        Version = 0;
+        CategoryId = categoryId; 
+        Status = AuctionStatus.Active; 
+    }
+
+    public void Cancel()
+    {
+        if (Status != AuctionStatus.Active)
+            throw new Exception("Only active auctions can be canceled.");
+            
+        if (Bids.Any())
+            throw new Exception("Cannot cancel auction because bids have already been placed.");
+
+        Status = AuctionStatus.Cancelled;
     }
     
     public void UpdatePriceAndWinner(decimal newPrice, Guid bidderId)

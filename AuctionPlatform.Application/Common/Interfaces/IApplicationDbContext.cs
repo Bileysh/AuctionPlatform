@@ -8,6 +8,7 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
     DbSet<AuctionItem> AuctionItems { get; }
     DbSet<Bid> Bids { get; }
-    
+    DbSet<Category> Categories { get; }
+    DbSet<Comment> Comments { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

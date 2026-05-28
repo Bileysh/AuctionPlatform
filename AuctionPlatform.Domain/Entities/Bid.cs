@@ -1,4 +1,6 @@
-﻿namespace AuctionPlatform.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AuctionPlatform.Domain.Entities;
 
 public class Bid
 {
@@ -7,8 +9,9 @@ public class Bid
     public Guid BidderId { get; private set; }
     public decimal Amount { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    
+    [ForeignKey(nameof(AuctionItemId))]
     public AuctionItem AuctionItem { get; private set; } = null!;
+    [ForeignKey(nameof(BidderId))]
     public User Bidder { get; private set; } = null!;
     
     protected Bid(){}

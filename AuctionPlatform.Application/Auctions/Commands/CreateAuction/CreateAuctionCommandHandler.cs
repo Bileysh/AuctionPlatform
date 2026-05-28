@@ -20,7 +20,8 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
             request.Description,
             request.StartingPrice,
             request.EndsAt,
-            request.SellerId
+            request.SellerId,
+            request.CategoryId
         );
 
         _context.AuctionItems.Add(auctionItem);

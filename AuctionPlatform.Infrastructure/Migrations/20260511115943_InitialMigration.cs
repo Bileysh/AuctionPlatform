@@ -1,16 +1,32 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace AuctionPlatform.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -38,11 +54,19 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     EndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SellerId = table.Column<Guid>(type: "uuid", nullable: false),
                     WinnerId = table.Column<Guid>(type: "uuid", nullable: true),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AuctionItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuctionItems_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AuctionItems_Users_SellerId",
                         column: x => x.SellerId,
@@ -84,6 +108,48 @@ namespace AuctionPlatform.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuctionItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AuctionItems_AuctionItemId",
+                        column: x => x.AuctionItemId,
+                        principalTable: "AuctionItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Електроніка" },
+                    { 2, "Автомобілі" },
+                    { 3, "Мистецтво" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuctionItems_CategoryId",
+                table: "AuctionItems",
+                column: "CategoryId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AuctionItems_SellerId",
                 table: "AuctionItems",
@@ -105,6 +171,16 @@ namespace AuctionPlatform.Infrastructure.Migrations
                 column: "BidderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_AuctionItemId",
+                table: "Comments",
+                column: "AuctionItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_AuthorId",
+                table: "Comments",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Auth0Id",
                 table: "Users",
                 column: "Auth0Id",
@@ -118,7 +194,13 @@ namespace AuctionPlatform.Infrastructure.Migrations
                 name: "Bids");
 
             migrationBuilder.DropTable(
+                name: "Comments");
+
+            migrationBuilder.DropTable(
                 name: "AuctionItems");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -1,4 +1,5 @@
 ﻿using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +17,13 @@ public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQu
     public async Task<List<AuctionDto>> Handle(GetActiveAuctionsQuery request, CancellationToken cancellationToken)
     {
         return await _context.AuctionItems
-            .Where(a => a.EndsAt > DateTime.UtcNow)
+            .Where(a => a.Status == AuctionStatus.Active &&a.EndsAt > DateTime.UtcNow)
             .OrderBy(a => a.EndsAt)
             .Select(a => new AuctionDto(
                 a.Id,
                 a.Title,
                 a.CurrentPrice,
-                a.EndsAt))
+                a.EndsAt,
+                a.Category.Name))
             .ToListAsync(cancellationToken);}
 }

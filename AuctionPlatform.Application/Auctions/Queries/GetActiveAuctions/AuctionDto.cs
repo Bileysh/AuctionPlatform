@@ -4,4 +4,5 @@ public record AuctionDto(
     Guid Id,
     string Title,
     decimal CurrentPrice,
-    DateTime EndsAt);
+    DateTime EndsAt,
+    string CategoryName);

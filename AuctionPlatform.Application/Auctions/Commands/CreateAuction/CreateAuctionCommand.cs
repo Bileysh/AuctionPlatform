@@ -7,4 +7,5 @@ public record CreateAuctionCommand(
     string Description, 
     decimal StartingPrice, 
     DateTime EndsAt, 
-    Guid SellerId) : IRequest<Guid>;
+    Guid SellerId,
+    int CategoryId) : IRequest<Guid>;
