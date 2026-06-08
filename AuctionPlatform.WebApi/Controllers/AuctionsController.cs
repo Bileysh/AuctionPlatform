@@ -1,6 +1,10 @@
-﻿using AuctionPlatform.Application.Auctions.Commands.CreateAuction;
+﻿using AuctionPlatform.Application.Auctions.Commands.CancelAuction;
+using AuctionPlatform.Application.Auctions.Commands.CreateAuction;
 using AuctionPlatform.Application.Auctions.Commands.PlaceBid;
+using AuctionPlatform.Application.Auctions.Commands.UpdateAuction;
 using AuctionPlatform.Application.Auctions.Queries.GetActiveAuctions;
+using AuctionPlatform.Application.Auctions.Queries.GetAuctionById;
+using AuctionPlatform.WebApi.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +28,7 @@ public class AuctionsController: ControllerBase
         return CreatedAtAction(nameof(CreateAuction), new { id = auctionId }, auctionId);
     }
     
-    [HttpGet]
+    [HttpGet("active")]
     public async Task<IActionResult> GetActiveAuctions()
     {
         var query = new GetActiveAuctionsQuery();
@@ -37,5 +41,29 @@ public class AuctionsController: ControllerBase
     {
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Bid placed successfully" });
+    }
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetAuctionById(Guid id)
+    {
+        var query = new GetAuctionByIdQuery(id);
+        var result = await _sender.Send(query);
+        return Ok(result);
+    }
+    
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] UpdateAuctionRequest request)
+    {
+        var command =
+            new UpdateAuctionCommand(id, request.Title, request.Description, request.EndsAt, request.CategoryId);
+        var result = await _sender.Send(command);
+        return Ok(new { Success = result, Message = "Auction updated successfully" });
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> CancelAuction(Guid id)
+    {
+        var command = new CancelAuctionCommand(id);
+        var result = await _sender.Send(command);
+        return Ok(new { Success = result, Message = "Auction canceled successfully" });
     }
 }

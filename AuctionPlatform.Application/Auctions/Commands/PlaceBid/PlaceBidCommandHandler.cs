@@ -22,18 +22,39 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         if (auction == null)
             throw new Exception("Auction not found.");
         
-        if (DateTime.UtcNow > auction.EndsAt)
-            throw new Exception("This auction is already closed.");
-
-        if (request.Amount <= auction.CurrentPrice)
-            throw new Exception("Bid amount must be greater than the current price.");
+        var bidder = await _context.Users
+            .Include(u => u.Transactions)
+            .FirstOrDefaultAsync(u => u.Id == request.BidderId, cancellationToken);
+        
+        if (bidder == null)
+            throw new Exception("Bidder not found.");
+        
+        var previousWinnerId = auction.WinnerId;
+        var previousPrice = auction.CurrentPrice;
         
         auction.UpdatePriceAndWinner(request.Amount, request.BidderId);
+
+        if (previousWinnerId.HasValue)
+        {
+            if (previousWinnerId.Value == request.BidderId)
+            {
+                bidder.ReleaseFunds(previousPrice, auction.Id);
+            }
+            else
+            {
+                var previousWinner = await _context.Users
+                    .Include(u => u.Transactions)
+                    .FirstOrDefaultAsync(u => u.Id == previousWinnerId.Value, cancellationToken);
+                
+                previousWinner?.ReleaseFunds(previousPrice, auction.Id);
+            }
+        }
         
-        var bid = new Bid(auction.Id, request.BidderId, request.Amount);
+        bidder.HoldFunds(request.Amount, auction.Id);
         
+        var bid = new Bid(request.AuctionId, request.BidderId, request.Amount);
         _context.Bids.Add(bid);
-        
+
         try
         {
             await _context.SaveChangesAsync(cancellationToken);

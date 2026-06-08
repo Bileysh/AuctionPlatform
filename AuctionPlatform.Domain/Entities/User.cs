@@ -61,4 +61,12 @@ public class User
         Transactions.Add(tx);
         return tx;
     }
+    
+    public void UpdateProfile(string newUserName)
+    {
+        if (string.IsNullOrWhiteSpace(newUserName))
+            throw new Exception("Username cannot be empty.");
+        
+        UserName = newUserName;
+    }
 }

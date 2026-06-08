@@ -15,6 +15,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
     
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        
         var user = new User(
             userName: request.Username, 
             auth0Id: $"local_{Guid.NewGuid()}" 

@@ -61,4 +61,21 @@ public class AuctionItem
         CurrentPrice = newPrice;
         WinnerId = bidderId;
     }
+    
+    public void UpdateDetails(string title, string description, DateTime endsAt, int categoryId)
+    {
+        if (Status != AuctionStatus.Active)
+            throw new Exception("Only active auctions can be updated.");
+            
+        if (DateTime.UtcNow > EndsAt)
+            throw new Exception("Cannot update auction because it has already ended.");
+        
+        if (Bids.Any())
+            throw new Exception("Cannot update auction details because bids have already been placed.");
+       
+        Title = title;
+        Description = description;
+        EndsAt = endsAt;
+        CategoryId = categoryId;
+    }
 }
