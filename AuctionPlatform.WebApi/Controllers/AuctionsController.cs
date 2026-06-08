@@ -1,5 +1,7 @@
-﻿using AuctionPlatform.Application.Auctions.Commands.CancelAuction;
+﻿using AuctionPlatform.Application.Auctions.Commands.AddComment;
+using AuctionPlatform.Application.Auctions.Commands.CancelAuction;
 using AuctionPlatform.Application.Auctions.Commands.CreateAuction;
+using AuctionPlatform.Application.Auctions.Commands.DeleteComment;
 using AuctionPlatform.Application.Auctions.Commands.PlaceBid;
 using AuctionPlatform.Application.Auctions.Commands.UpdateAuction;
 using AuctionPlatform.Application.Auctions.Queries.GetActiveAuctions;
@@ -53,8 +55,7 @@ public class AuctionsController: ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] UpdateAuctionRequest request)
     {
-        var command =
-            new UpdateAuctionCommand(id, request.Title, request.Description, request.EndsAt, request.CategoryId);
+        var command = new UpdateAuctionCommand(id, request.Title, request.Description, request.EndsAt, request.CategoryId);
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Auction updated successfully" });
     }
@@ -65,5 +66,21 @@ public class AuctionsController: ControllerBase
         var command = new CancelAuctionCommand(id);
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Auction canceled successfully" });
+    }
+    
+    [HttpPost("{id:guid}/comments")]
+    public async Task<IActionResult> AddComment(Guid id, [FromBody] AddCommentRequest request)
+    {
+        var command = new AddCommentCommand(id, request.AuthorId, request.Text);
+        var commentId = await _sender.Send(command);
+        return Ok(new { CommentId = commentId, Message = "Comment added successfully" });
+    }
+    
+    [HttpDelete("comments/{commentId:guid}")]
+    public async Task<IActionResult> DeleteComment(Guid commentId)
+    {
+        var command = new DeleteCommentCommand(commentId);
+        var result = await _sender.Send(command);
+        return Ok(new { Success = result, Message = "Comment deleted successfully" });
     }
 }

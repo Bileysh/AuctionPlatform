@@ -13,4 +13,12 @@ public class Category
     {
         Name = name;
     }
+    
+    public void UpdateName(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new Exception("Category name cannot be empty.");
+        
+        Name = newName;
+    }
 }

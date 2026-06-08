@@ -191,7 +191,7 @@ namespace AuctionPlatform.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.User", b =>

@@ -69,4 +69,18 @@ public class User
         
         UserName = newUserName;
     }
+    
+    public void PayForWonAuction(decimal amount, Guid auctionId)
+    {
+        Balance -= amount;
+        var tx = new Transaction(Id, amount, TransactionType.Payment, auctionId);
+        Transactions.Add(tx);
+    }
+
+    public void ReceiveAuctionIncome(decimal amount, Guid auctionId)
+    {
+        Balance += amount;
+        var tx = new Transaction(Id, amount, TransactionType.Deposit, auctionId);
+        Transactions.Add(tx);
+    }
 }

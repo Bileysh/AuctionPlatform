@@ -1,5 +1,6 @@
 using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Infrastructure.Data;
+using AuctionPlatform.WebApi.BackgroundJobs;
 using AuctionPlatform.WebApi.Extensions;
 using AuctionPlatform.WebApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,10 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddHostedService<AuctionClosingWorker>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

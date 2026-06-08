@@ -78,4 +78,12 @@ public class AuctionItem
         EndsAt = endsAt;
         CategoryId = categoryId;
     }
+    
+    public void Close()
+    {
+        if (Status != AuctionStatus.Active)
+            throw new Exception("Auction is already closed or canceled.");
+            
+        Status = AuctionStatus.Finished;
+    }
 }

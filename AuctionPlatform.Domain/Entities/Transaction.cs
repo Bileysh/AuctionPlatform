@@ -17,7 +17,6 @@ public class Transaction
 
     public Transaction(Guid userId, decimal amount, TransactionType type, Guid? referenceId = null)
     {
-        Id = Guid.NewGuid();
         UserId = userId;
         Amount = amount;
         Type = type;

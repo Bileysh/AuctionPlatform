@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuctionPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-    [Migration("20260511115943_InitialMigration")]
+    [Migration("20260608111605_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -169,6 +169,34 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -258,6 +286,17 @@ namespace AuctionPlatform.Infrastructure.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.Transaction", b =>
+                {
+                    b.HasOne("AuctionPlatform.Domain.Entities.User", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.AuctionItem", b =>
                 {
                     b.Navigation("Bids");
@@ -268,6 +307,11 @@ namespace AuctionPlatform.Infrastructure.Migrations
             modelBuilder.Entity("AuctionPlatform.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Auctions");
+                });
+
+            modelBuilder.Entity("AuctionPlatform.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

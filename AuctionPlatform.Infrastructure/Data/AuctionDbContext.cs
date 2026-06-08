@@ -13,6 +13,7 @@ public class AuctionDbContext : DbContext, IApplicationDbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<AuctionItem> AuctionItems => Set<AuctionItem>();
     public DbSet<Bid> Bids => Set<Bid>();
+    public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Comment> Comments => Set<Comment>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -78,6 +79,16 @@ public class AuctionDbContext : DbContext, IApplicationDbContext
                 .WithMany()
                 .HasForeignKey(e => e.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Transactions)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

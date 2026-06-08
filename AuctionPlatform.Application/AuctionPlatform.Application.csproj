@@ -15,4 +15,16 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Bids\Queries\GetAllBIds\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Bids\Queries\GetAllBIds\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Bids\Queries\GetAllBIds\**" />
+    </ItemGroup>
+
 </Project>
