@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +21,7 @@ public class UpdateUserCommandHandler: IRequestHandler<UpdateUserCommand, bool>
             .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
         
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(User), request.Id);
         
         user.UpdateProfile(request.Name);
         await _context.SaveChangesAsync(cancellationToken);

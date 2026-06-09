@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +20,7 @@ public class DeleteUserCommandHandler: IRequestHandler<DeleteUserCommand, bool>
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
         
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(User), request.Id);
         
         _context.Users.Remove(user);
         

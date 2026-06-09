@@ -28,7 +28,7 @@ public class UsersController : ControllerBase
         return CreatedAtAction(nameof(CreateUser), new { id = userId }, userId);
     }
 
-    [HttpPost("deposit")]
+    [HttpPost("deposit{id:guid}")]
 
     public async Task<IActionResult> DepositCommand(Guid id, [FromBody] DepositRequest request)
     {
@@ -45,9 +45,7 @@ public class UsersController : ControllerBase
         var result = await _sender.Send(query);
         return Ok(result);
     }
-
-    public record UpdateUserRequest(string Username);
-
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
     {

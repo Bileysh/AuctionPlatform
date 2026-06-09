@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +20,9 @@ public class CancelAuctionCommandHandler : IRequestHandler<CancelAuctionCommand,
         var auction = await _context.AuctionItems
             .Include(a => a.Bids)
             .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
-        
+
         if (auction == null)
-            throw new Exception("Auction not found.");
+            throw new NotFoundException(nameof(AuctionItem), request.Id);
         
         auction.Cancel();
         

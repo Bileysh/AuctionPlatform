@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
 
 namespace AuctionPlatform.WebApi.Infrastructure;
 
@@ -16,6 +18,42 @@ public class GlobalExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         _logger.LogError(exception, "Unhandled exception occurred: {Message}", exception.Message);
+        
+        if (exception is NotFoundException notFoundException)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            await httpContext.Response.WriteAsJsonAsync(new
+            {
+                Title = "Not Found",
+                Status = 404,
+                Detail = notFoundException.Message
+            }, cancellationToken);
+            
+            return true;
+        }
+        
+        if (exception is ValidationException validationException)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            
+            var errors = validationException.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            await httpContext.Response.WriteAsJsonAsync(new
+            {
+                Title = "Validation Error",
+                Status = 400,
+                Detail = "Одне або кілька полів не пройшли перевірку.",
+                Errors = errors 
+            }, cancellationToken);
+
+            return true;
+        }
+        
         
         if (exception is DbUpdateConcurrencyException)
         {

@@ -1,4 +1,5 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,14 +21,14 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
             .FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken); 
         
         if (auction == null)
-            throw new Exception("Auction not found.");
+            throw new NotFoundException(nameof(AuctionItem), request.AuctionId);
         
         var bidder = await _context.Users
             .Include(u => u.Transactions)
             .FirstOrDefaultAsync(u => u.Id == request.BidderId, cancellationToken);
         
         if (bidder == null)
-            throw new Exception("Bidder not found.");
+            throw new NotFoundException(nameof(Bid), request.BidderId);
         
         var previousWinnerId = auction.WinnerId;
         var previousPrice = auction.CurrentPrice;

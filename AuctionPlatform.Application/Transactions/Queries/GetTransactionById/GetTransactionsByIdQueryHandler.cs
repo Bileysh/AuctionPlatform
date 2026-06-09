@@ -1,5 +1,7 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Application.Transactions.Queries.GetAllTransaction;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +25,7 @@ public class GetTransactionsByIdQueryHandler: IRequestHandler<GetTransactionById
             .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 
         if (query == null) 
-            throw new Exception("Transaction not found.");
+            throw new NotFoundException(nameof(Transaction), request.Id);
         
         return query;
     }

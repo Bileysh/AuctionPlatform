@@ -1,3 +1,4 @@
+using AuctionPlatform.Application;
 using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Infrastructure.Data;
 using AuctionPlatform.WebApi.BackgroundJobs;
@@ -15,10 +16,7 @@ builder.Services.AddDbContext<AuctionDbContext>(options =>
 builder.Services.AddScoped<IApplicationDbContext>(provider => 
     provider.GetRequiredService<AuctionDbContext>());
 
-builder.Services.AddMediatR(cfg => 
-{
-    cfg.RegisterServicesFromAssembly(typeof(IApplicationDbContext).Assembly);
-});
+builder.Services.AddApplication();
 
 builder.Services.AddControllers();
 builder.Services.AddHostedService<AuctionClosingWorker>();

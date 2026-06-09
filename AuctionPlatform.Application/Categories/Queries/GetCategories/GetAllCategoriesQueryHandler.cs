@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +23,7 @@ public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuer
             .ToListAsync(cancellationToken);
 
         if (categories == null)
-            throw new Exception("Category not found.");
+            throw new NotFoundException("No categories found.");
         
         return categories;
     }

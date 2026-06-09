@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +27,8 @@ public class DeleteCategoryCommandHandler: IRequestHandler<DeleteCategoryCommand
             .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
         
         if (category == null)           
-            throw new Exception("Category not found.");
-        
+            throw new NotFoundException(nameof(Category), request.Id);
+                
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync(cancellationToken);
         

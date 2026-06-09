@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +22,7 @@ public class DepositCommandHandler: IRequestHandler<DepositCommand, bool>
             .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(User), request.UserId);
         
         user.Deposit(request.Amount);
         

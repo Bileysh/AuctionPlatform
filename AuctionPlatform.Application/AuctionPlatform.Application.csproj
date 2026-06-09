@@ -11,12 +11,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
       <PackageReference Include="MediatR" Version="14.1.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="Bids\Queries\GetAllBIds\**" />
+      <Compile Include="Bids\Queries\GetAllBids\BidDto.cs" />
+      <Compile Include="Bids\Queries\GetAllBids\GetAllBidsQuery.cs" />
+      <Compile Include="Bids\Queries\GetAllBids\GetAllBidsQueryHandler.cs" />
     </ItemGroup>
 
     <ItemGroup>

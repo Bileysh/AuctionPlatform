@@ -62,7 +62,7 @@ public class AuctionItem
         WinnerId = bidderId;
     }
     
-    public void UpdateDetails(string title, string description, DateTime endsAt, int categoryId)
+    public void UpdateDetails(string title, string? description, DateTime endsAt, int categoryId)
     {
         if (Status != AuctionStatus.Active)
             throw new Exception("Only active auctions can be updated.");

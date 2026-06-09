@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +24,7 @@ public class GetAllBidsQueryHandler: IRequestHandler<GetAllBidsQuery, List<BidDt
             .ToListAsync(cancellationToken);
 
         if (bids == null)
-            throw new Exception("Bids not found.");
+            throw new NotFoundException("No bids found.");
         
         return bids;
     }

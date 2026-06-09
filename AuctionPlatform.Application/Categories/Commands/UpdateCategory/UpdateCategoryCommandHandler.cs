@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +21,7 @@ public class UpdateCategoryCommandHandler: IRequestHandler<UpdateCategoryCommand
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
        
         if (category == null)
-            throw new Exception("Category not found.");
+            throw new NotFoundException(nameof(Category), request.Id);
         
         category.UpdateName(category.Name);
         

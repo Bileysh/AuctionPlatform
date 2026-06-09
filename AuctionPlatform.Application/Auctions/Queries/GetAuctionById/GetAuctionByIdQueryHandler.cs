@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +26,7 @@ public class GetAuctionByIdQueryHandler : IRequestHandler<GetAuctionByIdQuery, A
             .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
         
         if (auction == null)          
-            throw new Exception("Auction not found.");
+            throw new NotFoundException(nameof(AuctionItem), request.Id);
         
         return new AuctionDetailsDto(
             auction.Id,

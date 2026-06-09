@@ -1,5 +1,7 @@
 ﻿using AuctionPlatform.Application.Auctions.Commands.AddComment;
+using AuctionPlatform.Application.Common.Exceptions;
 using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +22,7 @@ public class DeleteCommentCommandHandler: IRequestHandler<DeleteCommentCommand, 
             .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
             
         if (comment == null)
-            throw new Exception("Comment not found.");
+            throw new NotFoundException(nameof(Comment), request.Id);
         
         _context.Comments.Remove(comment);
         await _context.SaveChangesAsync(cancellationToken);

@@ -1,4 +1,6 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +23,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
             .FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
         
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(User), request.Id);
 
         return new UserDto(
             user.Id,
