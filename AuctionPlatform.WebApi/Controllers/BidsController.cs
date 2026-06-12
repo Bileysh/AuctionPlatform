@@ -1,6 +1,7 @@
 ﻿using AuctionPlatform.Application.Bids.Queries.GetAllBids;
 using AuctionPlatform.Application.Bids.Queries.GetBidById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
@@ -15,7 +16,7 @@ public class BidsController : ControllerBase
     {
         _sender = sender;
     }
-    
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllBids()
     {
@@ -23,7 +24,7 @@ public class BidsController : ControllerBase
         var bids = await _sender.Send(query);
         return Ok(bids);
     }
-
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetBidById(Guid id)
     {

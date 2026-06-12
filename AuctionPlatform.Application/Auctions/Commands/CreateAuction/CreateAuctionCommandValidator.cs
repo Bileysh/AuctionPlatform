@@ -19,9 +19,6 @@ public class CreateAuctionCommandValidator : AbstractValidator<CreateAuctionComm
         RuleFor(v => v.EndsAt)
             .GreaterThan(DateTime.UtcNow).WithMessage("Auction end time must be in the future.");
 
-        RuleFor(v => v.SellerId)
-            .NotEmpty().WithMessage("Seller ID is required.");
-
         RuleFor(v => v.CategoryId)
             .GreaterThan(0).WithMessage("Valid Category ID is required.");
     }

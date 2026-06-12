@@ -8,9 +8,6 @@ public class AddCommentCommandValidator: AbstractValidator<AddCommentCommand>
     {
         RuleFor(v => v.AuctionId)
             .NotEmpty().WithMessage("Auction ID is required.");
-
-        RuleFor(v => v.AuthorId)
-            .NotEmpty().WithMessage("Author ID is required.");
         
         RuleFor(v => v.Text)
             .NotEmpty().WithMessage("Comment text is required.")

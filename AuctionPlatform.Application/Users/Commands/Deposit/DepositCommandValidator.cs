@@ -8,7 +8,5 @@ public class DepositCommandValidator: AbstractValidator<DepositCommand>
     {
         RuleFor(v => v.Amount)
             .GreaterThan(0).WithMessage("Deposit amount must be strictly greater than zero!");
-        RuleFor(v => v.UserId)
-            .NotEmpty().WithMessage("User id must be provided!");
     }
 }

@@ -35,6 +35,9 @@ public class AuctionClosingWorker: BackgroundService
                 }
                 
             }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while closing expired auctions.");

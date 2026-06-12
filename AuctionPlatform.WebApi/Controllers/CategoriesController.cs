@@ -5,6 +5,7 @@ using AuctionPlatform.Application.Categories.Queries.GetCategories;
 using AuctionPlatform.Application.Categories.Queries.GetCategoriesById;
 using AuctionPlatform.WebApi.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
@@ -20,6 +21,7 @@ public class CategoriesController: ControllerBase
         _sender = sender;
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
     {
@@ -34,7 +36,8 @@ public class CategoriesController: ControllerBase
         var categories = await _sender.Send(query, cancellationToken);
         return Ok(categories);
     }
-
+    
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetCategoryById(int id, CancellationToken cancellationToken)
     {
@@ -43,6 +46,7 @@ public class CategoriesController: ControllerBase
         return Ok(category);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
@@ -50,7 +54,8 @@ public class CategoriesController: ControllerBase
         var result = await _sender.Send(command, cancellationToken);
         return Ok(new { Success = result, Message = "Category updated successfully" });
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCategory(int id, CancellationToken cancellationToken)
     {

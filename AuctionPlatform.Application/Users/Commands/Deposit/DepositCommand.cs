@@ -2,4 +2,4 @@
 
 namespace AuctionPlatform.Application.Users.Commands.Deposit;
 
-public record DepositCommand(Guid UserId, decimal Amount) : IRequest<bool>;
+public record DepositCommand(decimal Amount) : IRequest<bool>;

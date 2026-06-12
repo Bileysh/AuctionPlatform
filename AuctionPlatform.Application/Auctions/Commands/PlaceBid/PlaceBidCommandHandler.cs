@@ -9,14 +9,21 @@ namespace AuctionPlatform.Application.Auctions.Commands.PlaceBid;
 public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
     
-    public PlaceBidCommandHandler(IApplicationDbContext context)
+    public PlaceBidCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
     
     public async Task<bool> Handle(PlaceBidCommand request, CancellationToken cancellationToken)
     {
+        var auth0Id = _currentUserService.Auth0Id;
+        
+        if (string.IsNullOrEmpty(auth0Id))
+            throw new UnauthorizedAccessException("You must be logged in to place a bid.");
+        
         var auction = await _context.AuctionItems
             .FirstOrDefaultAsync(a => a.Id == request.AuctionId, cancellationToken); 
         
@@ -25,19 +32,22 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         
         var bidder = await _context.Users
             .Include(u => u.Transactions)
-            .FirstOrDefaultAsync(u => u.Id == request.BidderId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Auth0Id == auth0Id, cancellationToken);
         
         if (bidder == null)
-            throw new NotFoundException(nameof(Bid), request.BidderId);
+            throw new NotFoundException(nameof(User), auth0Id);
+            
+        if (auction.SellerId == bidder.Id)
+            throw new Exception("You cannot bid on your own auction.");
         
         var previousWinnerId = auction.WinnerId;
         var previousPrice = auction.CurrentPrice;
         
-        auction.UpdatePriceAndWinner(request.Amount, request.BidderId);
+        auction.UpdatePriceAndWinner(request.Amount, bidder.Id);
 
         if (previousWinnerId.HasValue)
         {
-            if (previousWinnerId.Value == request.BidderId)
+            if (previousWinnerId.Value == bidder.Id)
             {
                 bidder.ReleaseFunds(previousPrice, auction.Id);
             }
@@ -53,7 +63,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         
         bidder.HoldFunds(request.Amount, auction.Id);
         
-        var bid = new Bid(request.AuctionId, request.BidderId, request.Amount);
+        var bid = new Bid(request.AuctionId, bidder.Id, request.Amount);
         _context.Bids.Add(bid);
 
         try

@@ -6,6 +6,7 @@ using AuctionPlatform.Application.Users.Queries.GetAllUsers;
 using AuctionPlatform.Application.Users.Queries.GetUserById;
 using AuctionPlatform.WebApi.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
@@ -20,24 +21,25 @@ public class UsersController : ControllerBase
     {
         _sender = sender;
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
     {
         var userId = await _sender.Send(command);
         return CreatedAtAction(nameof(CreateUser), new { id = userId }, userId);
     }
-
+    
+    [Authorize]
     [HttpPost("deposit{id:guid}")]
-
-    public async Task<IActionResult> DepositCommand(Guid id, [FromBody] DepositRequest request)
+    public async Task<IActionResult> DepositCommand([FromBody] DepositCommand command)
     {
-        var command = new DepositCommand(id, request.Amount);
         var result = await _sender.Send(command);
         
         return Ok(new { Success = result, Message = "Balance replenished successfully" });
     }
-    
+   
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUser(Guid id)
     {
@@ -46,6 +48,7 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
     
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
     {
@@ -53,7 +56,8 @@ public class UsersController : ControllerBase
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "User updated successfully" });
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
@@ -62,6 +66,7 @@ public class UsersController : ControllerBase
         return Ok(new { Success = result, Message = "User deleted successfully" });
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {

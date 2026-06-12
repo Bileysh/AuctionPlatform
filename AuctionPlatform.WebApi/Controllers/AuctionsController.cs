@@ -8,6 +8,7 @@ using AuctionPlatform.Application.Auctions.Queries.GetActiveAuctions;
 using AuctionPlatform.Application.Auctions.Queries.GetAuctionById;
 using AuctionPlatform.WebApi.DTO;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
@@ -22,7 +23,7 @@ public class AuctionsController: ControllerBase
     {
         _sender = sender;
     }
-    
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionCommand command, CancellationToken cancellationToken)
     {
@@ -38,12 +39,14 @@ public class AuctionsController: ControllerBase
         return Ok(auctions); 
     }
     
+    [Authorize]
     [HttpPost("bid")]
     public async Task<IActionResult> PlaceBid([FromBody] PlaceBidCommand command)
     {
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Bid placed successfully" });
     }
+    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetAuctionById(Guid id)
     {
@@ -52,6 +55,7 @@ public class AuctionsController: ControllerBase
         return Ok(result);
     }
     
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] UpdateAuctionRequest request)
     {
@@ -59,7 +63,8 @@ public class AuctionsController: ControllerBase
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Auction updated successfully" });
     }
-
+    
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> CancelAuction(Guid id)
     {
@@ -68,14 +73,15 @@ public class AuctionsController: ControllerBase
         return Ok(new { Success = result, Message = "Auction canceled successfully" });
     }
     
-    [HttpPost("{id:guid}/comments")]
-    public async Task<IActionResult> AddComment(Guid id, [FromBody] AddCommentRequest request)
+    [Authorize]
+    [HttpPost("comments")]
+    public async Task<IActionResult> AddComment([FromBody] AddCommentCommand command)
     {
-        var command = new AddCommentCommand(id, request.AuthorId, request.Text);
         var commentId = await _sender.Send(command);
         return Ok(new { CommentId = commentId, Message = "Comment added successfully" });
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("comments/{commentId:guid}")]
     public async Task<IActionResult> DeleteComment(Guid commentId)
     {

@@ -1,6 +1,8 @@
 ﻿using AuctionPlatform.Application.Transactions.Queries.GetAllTransaction;
+using AuctionPlatform.Application.Transactions.Queries.GetMyTransactions;
 using AuctionPlatform.Application.Transactions.Queries.GetTransactionById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
@@ -15,7 +17,8 @@ public class TransactionsController : ControllerBase
     {
         _sender = sender;
     }
-
+    
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllTransactions()
     {
@@ -23,12 +26,22 @@ public class TransactionsController : ControllerBase
         var transactions = await _sender.Send(query);
         return Ok(transactions);
     }
-
+    
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetTransactionById(Guid id)
     {
         var query = new GetTransactionByIdQuery(id);
         var transaction = await _sender.Send(query);
         return Ok(transaction);
+    }
+
+    [Authorize]
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyTransactions()
+    {
+        var query = new GetMyTransactionsQuery();
+        var result = await _sender.Send(query);
+        return Ok(result);
     }
 }
