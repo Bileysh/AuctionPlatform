@@ -1,5 +1,7 @@
-﻿using AuctionPlatform.Application.Common.Interfaces;
+﻿using System.Linq.Expressions;
+using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Domain.Entities;
+using AuctionPlatform.Domain.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionPlatform.Infrastructure.Data;
@@ -90,5 +92,32 @@ public class AuctionDbContext : DbContext, IApplicationDbContext
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var property = Expression.PropertyOrField(parameter, nameof(ISoftDeletable.IsDeleted));
+                var condition = Expression.Equal(property, Expression.Constant(false));
+                var lambda = Expression.Lambda(condition, parameter);
+                
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+            }
+        }
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<ISoftDeletable>())
+        {
+            if (entry.State == EntityState.Deleted)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
+            }            
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

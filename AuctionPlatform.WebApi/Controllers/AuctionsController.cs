@@ -32,9 +32,8 @@ public class AuctionsController: ControllerBase
     }
     
     [HttpGet("active")]
-    public async Task<IActionResult> GetActiveAuctions()
+    public async Task<IActionResult> GetActiveAuctions([FromQuery] GetActiveAuctionsQuery query)
     {
-        var query = new GetActiveAuctionsQuery();
         var auctions = await _sender.Send(query);
         return Ok(auctions); 
     }

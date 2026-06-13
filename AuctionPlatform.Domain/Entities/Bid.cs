@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using AuctionPlatform.Domain.Entities.Interfaces;
 
 namespace AuctionPlatform.Domain.Entities;
 
-public class Bid
+public class Bid: ISoftDeletable
 {
     public Guid Id { get; private set; }
     public Guid AuctionItemId { get; private set; }
@@ -13,6 +14,7 @@ public class Bid
     public AuctionItem AuctionItem { get; private set; } = null!;
     [ForeignKey(nameof(BidderId))]
     public User Bidder { get; private set; } = null!;
+    public bool IsDeleted { get; set; }
     
     protected Bid(){}
     

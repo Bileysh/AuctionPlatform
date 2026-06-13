@@ -31,7 +31,7 @@ public class UsersController : ControllerBase
     }
     
     [Authorize]
-    [HttpPost("deposit{id:guid}")]
+    [HttpPost("deposit")]
     public async Task<IActionResult> DepositCommand([FromBody] DepositCommand command)
     {
         var result = await _sender.Send(command);

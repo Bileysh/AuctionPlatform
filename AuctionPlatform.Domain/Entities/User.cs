@@ -1,14 +1,16 @@
 ﻿using AuctionPlatform.Domain.Entities.Enums;
+using AuctionPlatform.Domain.Entities.Interfaces;
 
 namespace AuctionPlatform.Domain.Entities;
 
-public class User
+public class User : ISoftDeletable
 {
     public Guid Id { get; private set; }
     public string Auth0Id { get; private set; } = string.Empty;
     public string UserName { get; private set; } = string.Empty;
     public decimal Balance { get; private set; }
     
+    public bool IsDeleted { get; set; }
     public ICollection<Transaction> Transactions { get; private set; } = new List<Transaction>();
     protected User(){}
     

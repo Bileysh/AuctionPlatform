@@ -1,8 +1,9 @@
 ﻿using AuctionPlatform.Domain.Entities.Enums;
+using AuctionPlatform.Domain.Entities.Interfaces;
 
 namespace AuctionPlatform.Domain.Entities;
 
-public class AuctionItem
+public class AuctionItem: ISoftDeletable
 {
     public Guid Id { get; private set; }
     public string Title { get; private set; } = string.Empty;
@@ -16,6 +17,7 @@ public class AuctionItem
     public uint Version { get; private set; }
     public AuctionStatus Status { get; private set; }
     public int CategoryId { get; private set; }
+    public bool IsDeleted { get; set; }
     
     public User Seller { get; private set; } = null!;
     public User? Winner { get; private set; }
