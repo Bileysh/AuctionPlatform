@@ -1,5 +1,6 @@
 ﻿using AuctionPlatform.Domain.Entities.Enums;
 using AuctionPlatform.Domain.Entities.Interfaces;
+using AuctionPlatform.Domain.Exceptions;
 
 namespace AuctionPlatform.Domain.Entities;
 
@@ -44,10 +45,10 @@ public class AuctionItem: ISoftDeletable
     public void Cancel()
     {
         if (Status != AuctionStatus.Active)
-            throw new Exception("Only active auctions can be canceled.");
+            throw new BusinessRuleException("Only active auctions can be canceled.");
             
         if (Bids.Any())
-            throw new Exception("Cannot cancel auction because bids have already been placed.");
+            throw new BusinessRuleException("Cannot cancel auction because bids have already been placed.");
 
         Status = AuctionStatus.Cancelled;
     }
@@ -55,10 +56,10 @@ public class AuctionItem: ISoftDeletable
     public void UpdatePriceAndWinner(decimal newPrice, Guid bidderId)
     {
         if (newPrice <= CurrentPrice)
-            throw new Exception("Bid amount must be greater than the current price.");
+            throw new BusinessRuleException("Bid amount must be greater than the current price.");
             
         if (DateTime.UtcNow > EndsAt)
-            throw new Exception("This auction is already closed.");
+            throw new BusinessRuleException("This auction is already closed.");
 
         CurrentPrice = newPrice;
         WinnerId = bidderId;
@@ -67,13 +68,13 @@ public class AuctionItem: ISoftDeletable
     public void UpdateDetails(string title, string? description, DateTime endsAt, int categoryId)
     {
         if (Status != AuctionStatus.Active)
-            throw new Exception("Only active auctions can be updated.");
+            throw new BusinessRuleException("Only active auctions can be updated.");
             
         if (DateTime.UtcNow > EndsAt)
-            throw new Exception("Cannot update auction because it has already ended.");
+            throw new BusinessRuleException("Cannot update auction because it has already ended.");
         
         if (Bids.Any())
-            throw new Exception("Cannot update auction details because bids have already been placed.");
+            throw new BusinessRuleException("Cannot update auction details because bids have already been placed.");
        
         Title = title;
         Description = description;
@@ -84,7 +85,7 @@ public class AuctionItem: ISoftDeletable
     public void Close()
     {
         if (Status != AuctionStatus.Active)
-            throw new Exception("Auction is already closed or canceled.");
+            throw new BusinessRuleException("Auction is already closed or canceled.");
             
         Status = AuctionStatus.Finished;
     }

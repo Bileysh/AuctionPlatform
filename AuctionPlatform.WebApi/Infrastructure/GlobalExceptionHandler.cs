@@ -1,4 +1,5 @@
 ﻿using AuctionPlatform.Application.Common.Exceptions;
+using AuctionPlatform.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,20 @@ public class GlobalExceptionHandler : IExceptionHandler
             return true;
         }
         
+        if (exception is BusinessRuleException businessException)
+        {
+            _logger.LogWarning("Business rule violation: {Message}", businessException.Message);
+          
+            httpContext.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+            await httpContext.Response.WriteAsJsonAsync(new
+            {
+                Title = "Business Rule Violation",
+                Status = 422,
+                Detail = businessException.Message
+            }, cancellationToken);
+            
+            return true;
+        }
         
         if (exception is DbUpdateConcurrencyException)
         {

@@ -1,4 +1,6 @@
-﻿namespace AuctionPlatform.Domain.Entities;
+﻿using AuctionPlatform.Domain.Exceptions;
+
+namespace AuctionPlatform.Domain.Entities;
 
 public class Category
 {
@@ -17,7 +19,7 @@ public class Category
     public void UpdateName(string newName)
     {
         if (string.IsNullOrWhiteSpace(newName))
-            throw new Exception("Category name cannot be empty.");
+            throw new BusinessRuleException("Category name cannot be empty.");
         
         Name = newName;
     }

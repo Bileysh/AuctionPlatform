@@ -1,5 +1,6 @@
 ﻿using AuctionPlatform.Domain.Entities.Enums;
 using AuctionPlatform.Domain.Entities.Interfaces;
+using AuctionPlatform.Domain.Exceptions;
 
 namespace AuctionPlatform.Domain.Entities;
 
@@ -39,7 +40,7 @@ public class User : ISoftDeletable
     
     public Transaction Deposit(decimal amount)
     {
-        if (amount <= 0) throw new Exception("Deposit amount must be positive.");
+        if (amount <= 0) throw new BusinessRuleException("Deposit amount must be positive.");
         
         Balance += amount;
         var tx = new Transaction(Id, amount, TransactionType.Deposit);
@@ -47,11 +48,11 @@ public class User : ISoftDeletable
         return tx;
     }
     
-    public Transaction HoldFunds(decimal amount, Guid auctionId)
+    public Transaction HoldFunds(decimal amount, Guid auctionId, decimal availableBalance)
     {
-        if (amount <= 0) throw new Exception("Hold amount must be positive.");
-        if (GetAvailableBalance() < amount) throw new Exception("Insufficient available funds to place this bid.");
-
+        if (amount <= 0) throw new BusinessRuleException("Hold amount must be positive.");
+        if (availableBalance < amount) throw new BusinessRuleException("Insufficient available funds to place this bid.");
+        
         var tx = new Transaction(Id, amount, TransactionType.Hold, auctionId);
         Transactions.Add(tx);
         return tx;
@@ -67,7 +68,7 @@ public class User : ISoftDeletable
     public void UpdateProfile(string newUserName)
     {
         if (string.IsNullOrWhiteSpace(newUserName))
-            throw new Exception("Username cannot be empty.");
+            throw new BusinessRuleException("Username cannot be empty.");
         
         UserName = newUserName;
     }

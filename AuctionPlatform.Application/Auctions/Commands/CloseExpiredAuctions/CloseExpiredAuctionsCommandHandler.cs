@@ -40,12 +40,14 @@ public class CloseExpiredAuctionsCommandHandler : IRequestHandler<CloseExpiredAu
                 auction.Winner.PayForWonAuction(auction.CurrentPrice, auction.Id);
                 auction.Seller.ReceiveAuctionIncome(auction.CurrentPrice, auction.Id);
                 
-                _logger.LogInformation($"Auction {auction.Id} closed. Winner: {auction.Winner.UserName}. Price: {auction.CurrentPrice}");
-            }
+                _logger.LogInformation(
+                    "Auction {AuctionId} closed. Winner: {WinnerName}. Price: {CurrentPrice}", 
+                    auction.Id, 
+                    auction.Winner.UserName, 
+                    auction.CurrentPrice);            }
             else
             {
-                _logger.LogInformation($"Auction {auction.Id} closed with no bids.");
-            }
+                _logger.LogInformation("Auction {AuctionId} closed with no bids.", auction.Id);            }
         }
         
         await _context.SaveChangesAsync(cancellationToken);
