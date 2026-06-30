@@ -39,9 +39,13 @@ public class AuctionsController: ControllerBase
     }
     
     [Authorize]
-    [HttpPost("bid")]
-    public async Task<IActionResult> PlaceBid([FromBody] PlaceBidCommand command)
+    [HttpPost("{id}/bid")]
+    public async Task<IActionResult> PlaceBid(Guid id,[FromBody] PlaceBidCommand command)
     {
+        if (id != command.AuctionId)
+        {
+            command = command with { AuctionId = id }; 
+        }
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Bid placed successfully" });
     }

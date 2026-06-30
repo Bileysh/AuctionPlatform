@@ -3,6 +3,7 @@ using AuctionPlatform.Application.Users.Commands.DeleteUser;
 using AuctionPlatform.Application.Users.Commands.Deposit;
 using AuctionPlatform.Application.Users.Commands.UpdateUser;
 using AuctionPlatform.Application.Users.Queries.GetAllUsers;
+using AuctionPlatform.Application.Users.Queries.GetCurrentUser;
 using AuctionPlatform.Application.Users.Queries.GetUserById;
 using AuctionPlatform.WebApi.DTO;
 using MediatR;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionPlatform.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
@@ -72,6 +74,13 @@ public class UsersController : ControllerBase
     {
         var query = new GetAllUsersQuery();
         var result = await _sender.Send(query);
+        return Ok(result);
+    }
+    
+    [HttpGet("me")]
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    {
+        var result = await _sender.Send(new GetCurrentUserQuery());
         return Ok(result);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Application.Users.Queries.GetUserById;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
