@@ -1,6 +1,7 @@
 ﻿using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionPlatform.Application.Auctions.Commands.CreateAuction;
@@ -9,11 +10,12 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
-
-    public CreateAuctionCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
+    private readonly IAuctionNotificationService _notificationService;
+    public CreateAuctionCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAuctionNotificationService notificationService)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _notificationService = notificationService;
     }
 
     public async Task<Guid> Handle(CreateAuctionCommand request, CancellationToken cancellationToken)
@@ -33,7 +35,9 @@ public class CreateAuctionCommandHandler : IRequestHandler<CreateAuctionCommand,
         _context.AuctionItems.Add(auctionItem);
 
         await _context.SaveChangesAsync(cancellationToken);
-
+        
+        await _notificationService.SendAuctionCreatedAsync(auctionItem.Id, cancellationToken);
+        
         return auctionItem.Id;
     }
 }

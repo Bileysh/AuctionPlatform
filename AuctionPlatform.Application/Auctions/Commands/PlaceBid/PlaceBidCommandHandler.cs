@@ -11,11 +11,13 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAuctionNotificationService _notificationService;
     
-    public PlaceBidCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
+    public PlaceBidCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAuctionNotificationService notificationService)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _notificationService = notificationService;
     }
     
     public async Task<bool> Handle(PlaceBidCommand request, CancellationToken cancellationToken)
@@ -40,9 +42,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         if (auction.SellerId == bidder.Id)
             throw new BusinessRuleException("You cannot bid on your own auction.");
         
-        var availableBalance = await _context.Transactions
-            .Where(t => t.UserId == bidder.Id)
-            .SumAsync(t => t.Amount, cancellationToken);
+        var availableBalance = bidder.GetAvailableBalance();
         
         var previousWinnerId = auction.WinnerId;
         var previousPrice = auction.CurrentPrice;
@@ -70,7 +70,10 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         _context.Bids.Add(bid);
 
         await _context.SaveChangesAsync(cancellationToken);
-        
+            
+        await _notificationService.SendNewBidAsync(request.AuctionId, request.Amount, cancellationToken);
+        await _notificationService.SendAuctionPriceUpdatedAsync(request.AuctionId, request.Amount, cancellationToken);
+
         return true;
     
        

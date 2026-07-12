@@ -3,6 +3,7 @@ using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Infrastructure.Data;
 using AuctionPlatform.WebApi.BackgroundJobs;
 using AuctionPlatform.WebApi.Extensions;
+using AuctionPlatform.WebApi.Hubs;
 using AuctionPlatform.WebApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,9 +23,11 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
 builder.Services.AddApplication();
 
 builder.Services.AddControllers();
-
+builder.Services.AddSignalR();
 builder.Services.AddHostedService<AuctionClosingWorker>();
+
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IAuctionNotificationService, AuctionNotificationService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -107,6 +110,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<AuctionHub>("/hubs/auction");
 
 app.Run();
 
