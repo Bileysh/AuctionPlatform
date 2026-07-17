@@ -1,7 +1,6 @@
 ﻿using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionPlatform.Application.Auctions.Commands.CreateAuction;

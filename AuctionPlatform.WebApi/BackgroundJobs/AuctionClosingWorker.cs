@@ -31,7 +31,8 @@ public class AuctionClosingWorker: BackgroundService
                 
                 if (closedCount > 0)
                 {
-                    _logger.LogInformation("Successfully closed {ClosedCount} expired auctions.", closedCount);                }
+                    _logger.LogInformation("Successfully closed {ClosedCount} expired auctions.", closedCount);                
+                }
                 
             }
             catch (OperationCanceledException)

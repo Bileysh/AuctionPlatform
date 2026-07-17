@@ -34,4 +34,14 @@ public class AuctionNotificationService: IAuctionNotificationService
             .SendAsync("AuctionPriceUpdated", auctionId, newPrice, cancellationToken);
     }
 
+    public async Task SendAuctionClosedAsync(Guid auctionId, CancellationToken cancellationToken = default)
+    {
+        await _hubContext.Clients
+            .Group("ActiveAuctions")
+            .SendAsync("AuctionClosed", auctionId, cancellationToken);
+        
+        await _hubContext.Clients
+            .Group($"Auction-{auctionId}")
+            .SendAsync("AuctionClosed", auctionId, cancellationToken);
+    }
 }

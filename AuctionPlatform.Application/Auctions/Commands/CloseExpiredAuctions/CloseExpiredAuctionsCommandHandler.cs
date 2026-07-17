@@ -10,11 +10,12 @@ public class CloseExpiredAuctionsCommandHandler : IRequestHandler<CloseExpiredAu
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<CloseExpiredAuctionsCommandHandler> _logger;
-    
-    public CloseExpiredAuctionsCommandHandler(IApplicationDbContext context, ILogger<CloseExpiredAuctionsCommandHandler> logger)
+    private readonly IAuctionNotificationService  _notificationService;
+    public CloseExpiredAuctionsCommandHandler(IApplicationDbContext context, ILogger<CloseExpiredAuctionsCommandHandler> logger, IAuctionNotificationService notificationService)
     {
         _context = context;
         _logger = logger;
+        _notificationService = notificationService;
     }
     
     public async Task<int> Handle(CloseExpiredAuctionsCommand request, CancellationToken cancellationToken)
@@ -44,13 +45,16 @@ public class CloseExpiredAuctionsCommandHandler : IRequestHandler<CloseExpiredAu
                     "Auction {AuctionId} closed. Winner: {WinnerName}. Price: {CurrentPrice}", 
                     auction.Id, 
                     auction.Winner.UserName, 
-                    auction.CurrentPrice);            }
+                    auction.CurrentPrice);
+            }
             else
             {
-                _logger.LogInformation("Auction {AuctionId} closed with no bids.", auction.Id);            }
+                _logger.LogInformation("Auction {AuctionId} closed with no bids.", auction.Id);
+            }
+            await _notificationService.SendAuctionClosedAsync(auction.Id, cancellationToken);
         }
-        
         await _context.SaveChangesAsync(cancellationToken);
+        
         return expiredAuctions.Count;
     }
 }

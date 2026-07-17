@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AuctionPlatform.Application;
 using AuctionPlatform.Application.Common.Interfaces;
 using AuctionPlatform.Infrastructure.Data;
@@ -22,7 +23,12 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
 
 builder.Services.AddApplication();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddSignalR();
 builder.Services.AddHostedService<AuctionClosingWorker>();
 
