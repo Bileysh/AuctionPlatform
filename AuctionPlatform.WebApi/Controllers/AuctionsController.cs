@@ -6,6 +6,8 @@ using AuctionPlatform.Application.Auctions.Commands.PlaceBid;
 using AuctionPlatform.Application.Auctions.Commands.UpdateAuction;
 using AuctionPlatform.Application.Auctions.Queries.GetActiveAuctions;
 using AuctionPlatform.Application.Auctions.Queries.GetAuctionById;
+using AuctionPlatform.Application.Auctions.Queries.GetMyAuctions;
+using AuctionPlatform.Application.Common.Models;
 using AuctionPlatform.WebApi.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +38,13 @@ public class AuctionsController: ControllerBase
     {
         var auctions = await _sender.Send(query);
         return Ok(auctions); 
+    }
+    
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyAuctions([FromQuery] GetMyAuctionsQuery query)
+    {
+        var auctions = await _sender.Send(query);
+        return Ok(auctions);
     }
     
     [Authorize]
@@ -92,4 +101,5 @@ public class AuctionsController: ControllerBase
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "Comment deleted successfully" });
     }
+    
 }
