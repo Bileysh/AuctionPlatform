@@ -2,4 +2,4 @@
 
 namespace AuctionPlatform.Application.Users.Commands.UpdateUser;
 
-public record UpdateUserCommand(Guid Id, string Name) : IRequest<bool>;
+public record UpdateUserCommand(string Name) : IRequest<bool>;

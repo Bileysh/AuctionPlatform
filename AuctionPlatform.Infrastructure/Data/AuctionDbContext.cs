@@ -43,6 +43,8 @@ public class AuctionDbContext : DbContext, IApplicationDbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Version).IsRowVersion();
+            entity.HasIndex(e => new { e.Status, e.EndsAt });
+            entity.HasIndex(e => new { e.Status, e.CategoryId });
             entity.HasOne(e => e.Seller)
                 .WithMany()
                 .HasForeignKey(e => e.SellerId)

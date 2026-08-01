@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using AuctionPlatform.Application;
 using AuctionPlatform.Application.Common.Interfaces;
+using AuctionPlatform.Infrastructure;
 using AuctionPlatform.Infrastructure.Data;
 using AuctionPlatform.WebApi.BackgroundJobs;
 using AuctionPlatform.WebApi.Extensions;
@@ -22,6 +23,7 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<AuctionDbContext>());
 
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

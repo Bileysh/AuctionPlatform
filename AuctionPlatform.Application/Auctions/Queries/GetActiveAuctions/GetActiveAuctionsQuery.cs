@@ -11,4 +11,7 @@ public record GetActiveAuctionsQuery : IRequest<PaginatedList<AuctionDto>>
     public string? SearchTerm { get; init; }
     public int? CategoryId { get; init; }
     
+    public string? SortColumn { get; init; }
+    public string? SortOrder { get; init; }
+    
 }

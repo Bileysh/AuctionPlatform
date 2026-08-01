@@ -3,6 +3,7 @@
 public record UserDto(
     Guid Id, 
     string Username, 
-    string? Auth0Id, 
-    decimal TotalBalance, 
-    decimal AvailableBalance);
+    string? Auth0Id = null, 
+    decimal? TotalBalance = null, 
+    decimal? AvailableBalance = null
+);

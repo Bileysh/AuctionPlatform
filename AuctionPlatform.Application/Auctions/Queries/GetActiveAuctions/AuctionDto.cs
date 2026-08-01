@@ -5,4 +5,5 @@ public record AuctionDto(
     string Title,
     decimal CurrentPrice,
     DateTime EndsAt,
-    string CategoryName);
+    string CategoryName,
+    int BidCount);

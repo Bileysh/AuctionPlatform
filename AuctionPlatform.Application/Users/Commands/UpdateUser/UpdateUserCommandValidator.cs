@@ -6,8 +6,6 @@ public class UpdateUserCommandValidator: AbstractValidator<UpdateUserCommand>
 {
     public UpdateUserCommandValidator()
     {
-        RuleFor(v => v.Id)
-            .NotEmpty().WithMessage("User id must be provided!");
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Username is required.")
             .MinimumLength(3).WithMessage("Username must be at least 3 characters long.")

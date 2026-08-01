@@ -47,7 +47,8 @@ public class GetMyAuctionsQueryHandler : IRequestHandler<GetMyAuctionsQuery, Pag
                 a.Title,
                 a.CurrentPrice,
                 a.EndsAt,
-                a.Category.Name
+                a.Category.Name,
+                a.Bids.Count
             ))
             .ToListAsync(cancellationToken);
 

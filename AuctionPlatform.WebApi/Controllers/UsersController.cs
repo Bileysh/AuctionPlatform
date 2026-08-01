@@ -51,10 +51,10 @@ public class UsersController : ControllerBase
     }
     
     [Authorize]
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
+    [HttpPut]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
-        var command = new UpdateUserCommand(id, request.Username);
+        var command = new UpdateUserCommand(request.Username);
         var result = await _sender.Send(command);
         return Ok(new { Success = result, Message = "User updated successfully" });
     }
