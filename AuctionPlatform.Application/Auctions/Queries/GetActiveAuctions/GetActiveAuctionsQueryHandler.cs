@@ -9,14 +9,25 @@ namespace AuctionPlatform.Application.Auctions.Queries.GetActiveAuctions;
 public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQuery, PaginatedList<AuctionDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICacheService _cacheService;
 
-    public GetActiveAuctionsQueryHandler(IApplicationDbContext context)
+    public GetActiveAuctionsQueryHandler(IApplicationDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<PaginatedList<AuctionDto>> Handle(GetActiveAuctionsQuery request, CancellationToken cancellationToken)
     {
+        var cacheKey = $"auctions:active:{request.PageNumber}:{request.PageSize}:{request.SearchTerm}:{request.CategoryId}:{request.SortColumn}:{request.SortOrder}".ToLower();
+
+        var cachedResult = await _cacheService.GetAsync<PaginatedList<AuctionDto>>(cacheKey, cancellationToken);
+        
+        if (cachedResult != null)
+        {
+            return cachedResult; 
+        }
+
         var query = _context.AuctionItems
             .AsNoTracking()
             .Where(a => a.Status == AuctionStatus.Active)
@@ -25,9 +36,10 @@ public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQu
         if (!string.IsNullOrEmpty(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.ToLower();
-            query = query
-                .Where(a => a.Title.ToLower().Contains(searchTerm) || 
-                            a.Description.ToLower().Contains(searchTerm));
+            
+            query = query.Where(a => 
+                EF.Functions.ILike(a.Title, $"%{searchTerm}%") || 
+                EF.Functions.ILike(a.Description, $"%{searchTerm}%"));
         }
         
         if (request.CategoryId.HasValue)
@@ -61,6 +73,10 @@ public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQu
             a.Bids.Count 
         ));
         
-        return await PaginatedList<AuctionDto>.CreateAsync(projectedQuery, request.PageNumber, request.PageSize, cancellationToken);
+        var result = await PaginatedList<AuctionDto>.CreateAsync(projectedQuery, request.PageNumber, request.PageSize, cancellationToken);
+
+        await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(1), cancellationToken);
+        
+        return result;
     }
 }

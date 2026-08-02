@@ -18,7 +18,8 @@ public static class DependencyInjection
         }
         
         services.AddScoped<IDistributedLockService, RedisLockService>();
-       
+        services.AddScoped<ICacheService, RedisCacheService>();
+        
         return services;
     }
 }

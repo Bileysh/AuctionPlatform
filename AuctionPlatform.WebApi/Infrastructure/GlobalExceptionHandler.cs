@@ -55,6 +55,18 @@ public class GlobalExceptionHandler : IExceptionHandler
             return true;
         }
         
+        if (exception is UnauthorizedAccessException)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await httpContext.Response.WriteAsJsonAsync(new
+            {
+                Title = "Forbidden",
+                Status = 403,
+                Detail = exception.Message
+            }, cancellationToken);
+            return true;
+        }
+        
         if (exception is BusinessRuleException businessException)
         {
             _logger.LogWarning("Business rule violation: {Message}", businessException.Message);
@@ -81,6 +93,18 @@ public class GlobalExceptionHandler : IExceptionHandler
             }, cancellationToken);
             
             return true; 
+        }
+        
+        if (exception is ConcurrencyException concurrencyException)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+            await httpContext.Response.WriteAsJsonAsync(new
+            {
+                Title = "Concurrency Conflict",
+                Status = 409,
+                Detail = concurrencyException.Message
+            }, cancellationToken);
+            return true;
         }
         
         var problemDetails = new ProblemDetails

@@ -33,7 +33,7 @@ public class BidsController : ControllerBase
         var bid = await _sender.Send(query);
         return Ok(bid);
     }
-    
+    [Authorize]
     [HttpGet("my")]
     public async Task<IActionResult> GetMyBiddedAuctions([FromQuery] GetMyBiddedAuctionsQuery query)
     {

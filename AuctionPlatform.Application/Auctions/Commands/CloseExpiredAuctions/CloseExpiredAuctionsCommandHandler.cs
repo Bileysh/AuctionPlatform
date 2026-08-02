@@ -11,6 +11,7 @@ public class CloseExpiredAuctionsCommandHandler : IRequestHandler<CloseExpiredAu
     private readonly IApplicationDbContext _context;
     private readonly ILogger<CloseExpiredAuctionsCommandHandler> _logger;
     private readonly IAuctionNotificationService  _notificationService;
+    
     public CloseExpiredAuctionsCommandHandler(IApplicationDbContext context, ILogger<CloseExpiredAuctionsCommandHandler> logger, IAuctionNotificationService notificationService)
     {
         _context = context;
@@ -32,29 +33,47 @@ public class CloseExpiredAuctionsCommandHandler : IRequestHandler<CloseExpiredAu
             return 0;
         }
 
+        int successfullyClosed = 0;
+
         foreach (var auction in expiredAuctions)
         {
-            auction.Close();
-            
-            if(auction.WinnerId.HasValue && auction.Winner != null)
+            try
             {
-                auction.Winner.PayForWonAuction(auction.CurrentPrice, auction.Id);
-                auction.Seller.ReceiveAuctionIncome(auction.CurrentPrice, auction.Id);
+                auction.Close();
                 
-                _logger.LogInformation(
-                    "Auction {AuctionId} closed. Winner: {WinnerName}. Price: {CurrentPrice}", 
-                    auction.Id, 
-                    auction.Winner.UserName, 
-                    auction.CurrentPrice);
+                if (auction.WinnerId.HasValue && auction.Winner != null)
+                {
+                    auction.Winner.PayForWonAuction(auction.CurrentPrice, auction.Id);
+                    auction.Seller.ReceiveAuctionIncome(auction.CurrentPrice, auction.Id);
+                    
+                    _logger.LogInformation(
+                        "Auction {AuctionId} closed. Winner: {WinnerName}. Price: {CurrentPrice}", 
+                        auction.Id, 
+                        auction.Winner.UserName, 
+                        auction.CurrentPrice);
+                }
+                else
+                {
+                    _logger.LogInformation("Auction {AuctionId} closed with no bids.", auction.Id);
+                }
+                
+                await _notificationService.SendAuctionClosedAsync(auction.Id, cancellationToken);
+                
+                await _context.SaveChangesAsync(cancellationToken);
+                successfullyClosed++;
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogInformation("Auction {AuctionId} closed with no bids.", auction.Id);
+                _logger.LogError(ex, "Failed to close auction {AuctionId}. Moving to next.", auction.Id);
+                
+                if (_context is DbContext dbContext)
+                {
+                    dbContext.Entry(auction).State = EntityState.Unchanged;
+                }
+                
             }
-            await _notificationService.SendAuctionClosedAsync(auction.Id, cancellationToken);
         }
-        await _context.SaveChangesAsync(cancellationToken);
         
-        return expiredAuctions.Count;
+        return successfullyClosed;
     }
 }

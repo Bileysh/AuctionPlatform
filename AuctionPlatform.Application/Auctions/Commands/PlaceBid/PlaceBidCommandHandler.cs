@@ -13,12 +13,14 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
     private readonly ICurrentUserService _currentUserService;
     private readonly IAuctionNotificationService _notificationService;
     private readonly IDistributedLockService _lockService;
-    public PlaceBidCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAuctionNotificationService notificationService, IDistributedLockService lockService)
+    private readonly ICacheService _cacheService;
+    public PlaceBidCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAuctionNotificationService notificationService, IDistributedLockService lockService, ICacheService cacheService)
     {
         _context = context;
         _currentUserService = currentUserService;
         _notificationService = notificationService;
         _lockService = lockService;
+        _cacheService = cacheService;
     }
     
     public async Task<bool> Handle(PlaceBidCommand request, CancellationToken cancellationToken)
@@ -31,13 +33,11 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         var lockKey = $"lock:auction:{request.AuctionId}";
         var lockToken = Guid.NewGuid().ToString();
         
-        bool isLocked = await _lockService.AcquireLockAsync(lockKey, lockToken, TimeSpan.FromSeconds(5));
+        bool isLocked = await _lockService.AcquireLockAsync(lockKey, lockToken, TimeSpan.FromSeconds(1));        
         
         if (!isLocked)
-        {
-            throw new BusinessRuleException("Аукціон зараз оновлюється іншим користувачем. Спробуйте ще раз.");
-        }
-
+            throw new DbUpdateConcurrencyException("Аукціон зараз оновлюється. Спробуйте ще раз.");
+        
         try
         {
             var auction = await _context.AuctionItems
@@ -69,8 +69,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
 
             if (request.Amount > effectiveAvailableBalance)
             {
-                throw new BusinessRuleException(
-                    $"Недостатньо коштів. Доступно для цієї ставки: {effectiveAvailableBalance} ₴, сума ставки: {request.Amount} ₴");
+                throw new ConcurrencyException($"Недостатньо коштів. Доступно для цієї ставки: {effectiveAvailableBalance} ₴, сума ставки: {request.Amount} ₴");
             }
 
             var previousWinnerId = auction.WinnerId;
@@ -102,9 +101,10 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
             await _context.SaveChangesAsync(cancellationToken);
 
             await _notificationService.SendNewBidAsync(request.AuctionId, request.Amount, cancellationToken);
-            await _notificationService.SendAuctionPriceUpdatedAsync(request.AuctionId, request.Amount,
-                cancellationToken);
+            await _notificationService.SendAuctionPriceUpdatedAsync(request.AuctionId, request.Amount, cancellationToken);
 
+            await _cacheService.RemoveByPrefixAsync("auctions:active", cancellationToken);
+            
             return true;
         }
         finally

@@ -6,6 +6,7 @@ COPY AuctionPlatform.Domain/AuctionPlatform.Domain.csproj             AuctionPla
 COPY AuctionPlatform.Application/AuctionPlatform.Application.csproj   AuctionPlatform.Application/
 COPY AuctionPlatform.Infrastructure/AuctionPlatform.Infrastructure.csproj AuctionPlatform.Infrastructure/
 COPY AuctionPlatform.WebApi/AuctionPlatform.WebApi.csproj             AuctionPlatform.WebApi/
+COPY ["AuctionPlatform.Domain.UnitTests/AuctionPlatform.Domain.UnitTests.csproj", "AuctionPlatform.Domain.UnitTests/"]
 
 RUN dotnet restore AuctionPlatform.sln
 

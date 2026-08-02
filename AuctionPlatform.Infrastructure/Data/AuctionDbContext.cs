@@ -22,6 +22,18 @@ public class AuctionDbContext : DbContext, IApplicationDbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("pg_trgm");
+       
+        modelBuilder.Entity<AuctionItem>()
+            .HasIndex(a => a.Title)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+        
+        modelBuilder.Entity<AuctionItem>()
+            .HasIndex(a => a.Description)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+        
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.User)
             .WithMany(u => u.Transactions)

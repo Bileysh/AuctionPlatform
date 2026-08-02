@@ -12,6 +12,7 @@ using AuctionPlatform.WebApi.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AuctionPlatform.WebApi.Controllers;
 
@@ -39,7 +40,7 @@ public class AuctionsController: ControllerBase
         var auctions = await _sender.Send(query);
         return Ok(auctions); 
     }
-    
+    [Authorize]
     [HttpGet("my")]
     public async Task<IActionResult> GetMyAuctions([FromQuery] GetMyAuctionsQuery query)
     {
@@ -49,6 +50,7 @@ public class AuctionsController: ControllerBase
     
     [Authorize]
     [HttpPost("{id}/bid")]
+    [EnableRateLimiting("BiddingPolicy")]
     public async Task<IActionResult> PlaceBid(Guid id,[FromBody] PlaceBidCommand command)
     {
         if (id != command.AuctionId)
