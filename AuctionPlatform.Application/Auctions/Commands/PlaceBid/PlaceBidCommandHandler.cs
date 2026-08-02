@@ -36,7 +36,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
         bool isLocked = await _lockService.AcquireLockAsync(lockKey, lockToken, TimeSpan.FromSeconds(1));        
         
         if (!isLocked)
-            throw new DbUpdateConcurrencyException("Аукціон зараз оновлюється. Спробуйте ще раз.");
+            throw new ConcurrencyException("Аукціон зараз оновлюється. Спробуйте ще раз.");
         
         try
         {
@@ -69,7 +69,7 @@ public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, bool>
 
             if (request.Amount > effectiveAvailableBalance)
             {
-                throw new ConcurrencyException($"Недостатньо коштів. Доступно для цієї ставки: {effectiveAvailableBalance} ₴, сума ставки: {request.Amount} ₴");
+                throw new BusinessRuleException($"Недостатньо коштів. Доступно для цієї ставки: {effectiveAvailableBalance} ₴, сума ставки: {request.Amount} ₴");
             }
 
             var previousWinnerId = auction.WinnerId;
